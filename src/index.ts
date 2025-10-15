@@ -3,27 +3,44 @@ import { handlerReadiness } from "./api/readiness.js";
 import { middlewareLogResponses, middlewareMetricsInc } from "./api/middleware.js";
 import { Config } from "./config.js";
 
-const app = express();
+const app = express(); // sets up the main server
 const PORT = 8080;
+const api = express.Router() // sets up the sub routey server thingie, server but smol
+const admin = express.Router() // sets up the admin routing
+
+// mounts
+app.use("/api", api) // mounts the routing to url/api/endpoint
+app.use("/admin", admin) // mounts the admin routing
+
 
 //middleware layer
 app.use(middlewareLogResponses)
 app.use("/app", middlewareMetricsInc)
 
 //main app end points
-app.use("/app", express.static("./src/app")); // fuck this shit right here. its basicly moving where its checking for files from the root directory of the project to src/app but requires /app in the url to access it
-app.get("/healthz", handlerReadiness); // sets up the healthz end point that triggers the handler when visited
-app.get("/metrics", (req, res) => {
-  
-  res.send(`Hits: ${Config.fileserverHits}`); // end point displays current hits to the server since reset
+app.use("/app", express.static("./src/app")); // turns out its called routing and its important, who would have thunk
+
+// api end points
+api.get("/healthz", handlerReadiness); // sets up the healthz end point that triggers the handler when visited
+
+//admin end points
+admin.get("/metrics", (req, res) => {
+   res.set('Content-Type', 'text/html; charset=utf-8')
+   res.send(`<html>
+  <body>
+    <h1>Welcome, Chirpy Admin</h1>
+    <p>Chirpy has been visited ${Config.fileserverHits} times!</p>
+  </body>
+</html>`)
+ 
 });
 
-app.get("/reset", (req, res) => { // end point that resets the metrics page withput reseting the server
+admin.get("/reset", (req, res) => { // end point that resets the metrics page withput reseting the server
   Config.fileserverHits = 0 // resets the config to 0
   res.type("text/plain").send("OK") 
  });
 
-
+// other
 app.listen(PORT, () => { // will display this message when server is on and running
   console.log(`Server is running at http://localhost:${PORT}`);
 });

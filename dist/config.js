@@ -1,3 +1,3 @@
 export const Config = {
-    fileserverHits: 1337
+    fileserverHits: 0
 };
