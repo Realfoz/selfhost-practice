@@ -1,6 +1,6 @@
 import express from "express";
 import { handlerReadiness } from "./api/readiness.js";
-import { middlewareLogResponses, middlewareMetricsInc } from "./api/middleware.js";
+import { middlewareErrorHandler, middlewareLogResponses, middlewareMetricsInc } from "./api/middleware.js";
 import { Config } from "./config.js";
 import { validateChirpHandler } from "./api/validate_chirp.js";
 
@@ -46,3 +46,6 @@ admin.post("/reset", (req, res) => { // end point that resets the metrics page w
 app.listen(PORT, () => { // will display this message when server is on and running
   console.log(`Server is running at http://localhost:${PORT}`);
 });
+
+// error handeling middleware
+app.use(middlewareErrorHandler);// must be last so its a fail safe for everything

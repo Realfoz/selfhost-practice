@@ -14,3 +14,9 @@ export function middlewareMetricsInc(req, res, next) {
     });
     next();
 }
+export function middlewareErrorHandler(err, req, res, next) {
+    console.error("Something went wrong on our end");
+    res.status(500).json({
+        error: "Something went wrong on our end",
+    });
+}
