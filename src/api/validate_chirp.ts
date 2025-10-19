@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
+import { BadRequestError } from "./errors.js";
 
 
 
 export function validateChirpHandler(req: Request, res: Response) { // refactored to use the express json middleware so all responses use the .json() method.
       
             if (!req.body.body || typeof req.body.body !== "string") {
-                res.status(400).json({error: "Something went wrong"}) // checks type is a string after its parsed
-                return; // return after each res is updated so we dont overwrite accidently
+              throw new BadRequestError("Something went wrong, Invalid request body") //uses new err handler and classes
             }
             if (req.body.body.length > 140) {
-              throw new Error("Chirp too long"); // throws to err handler
+              throw new BadRequestError("Chirp is too long. Max length is 140") //uses new err handler and classes
             }
             // "swear" filter layer
             const words: string[] = req.body.body.split(" ") // forces the array to be only of strings so TS is happy

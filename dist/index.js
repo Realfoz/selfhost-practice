@@ -1,14 +1,15 @@
 import express from "express";
 import { handlerReadiness } from "./api/readiness.js";
-import { middlewareErrorHandler, middlewareLogResponses, middlewareMetricsInc } from "./api/middleware.js";
+import { middlewareLogResponses, middlewareMetricsInc } from "./api/middleware.js";
 import { Config } from "./config.js";
 import { validateChirpHandler } from "./api/validate_chirp.js";
+import { middlewareErrorHandler } from "./api/errors.js";
 const app = express(); // sets up the main server
 const PORT = 8080;
 const api = express.Router(); // sets up the sub routey server thingie, server but smol
 const admin = express.Router(); // sets up the admin routing
 //middleware layer
-app.use(express.json()); // this needs to be before any moutns or routing
+app.use(express.json()); // this needs to be before any mounts or routing
 app.use(middlewareLogResponses);
 app.use("/app", middlewareMetricsInc);
 // mounts
