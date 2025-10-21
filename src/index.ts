@@ -1,12 +1,14 @@
-import express from "express";
+import express, { request } from "express";
 import { handlerReadiness } from "./api/readiness.js";
 import { middlewareLogResponses, middlewareMetricsInc } from "./api/middleware.js";
-import { Config } from "./config.js";
+import { config } from "./config.js";
 import { validateChirpHandler } from "./api/validate_chirp.js";
 import { middlewareErrorHandler } from "./api/errors.js";
+import { createUserHandler } from "./api/create_user.js";
+import { handleAdminReset } from "./api/reset.js";
+import { db } from "./db/index.js";
 
 const app = express(); // sets up the main server
-const PORT = 8080;
 const api = express.Router() // sets up the sub routey server thingie, server but smol
 const admin = express.Router() // sets up the admin routing
 
@@ -25,6 +27,7 @@ app.use("/app", express.static("./src/app")); // turns out its called routing an
 // api end points
 api.get("/healthz", handlerReadiness); // sets up the healthz end point that triggers the handler when visited
 api.post("/validate_chirp", validateChirpHandler)
+api.post("/users", createUserHandler)
 
 //admin end points
 admin.get("/metrics", (req, res) => {
@@ -32,20 +35,17 @@ admin.get("/metrics", (req, res) => {
    res.send(`<html>
   <body>
     <h1>Welcome, Chirpy Admin</h1>
-    <p>Chirpy has been visited ${Config.fileserverHits} times!</p>
+    <p>Chirpy has been visited ${config.api.fileServerHits} times!</p>
   </body>
 </html>`)
  
 });
 
-admin.post("/reset", (req, res) => { // end point that resets the metrics page withput reseting the server
-  Config.fileserverHits = 0 // resets the config to 0
-  res.type("text/plain").send("OK") 
- });
+admin.post("/reset", (req, res) => handleAdminReset(req, res, config, db)); // passes all the goodies to the reset endpoint
 
 // other
-app.listen(PORT, () => { // will display this message when server is on and running
-  console.log(`Server is running at http://localhost:${PORT}`);
+app.listen(config.api.port, () => { // will display this message when server is on and running
+  console.log(`Server is running at http://localhost:${config.api.port}`);
 });
 
 // error handeling middleware

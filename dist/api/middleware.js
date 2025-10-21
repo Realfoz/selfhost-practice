@@ -1,4 +1,4 @@
-import { Config } from "../config.js";
+import { config } from "../config.js";
 export function middlewareLogResponses(req, res, next) {
     res.on("finish", () => {
         const code = res.statusCode; // if it finds a finished it would run a function but we have nothing here but go on to define what it does with the fat arrow
@@ -10,13 +10,7 @@ export function middlewareLogResponses(req, res, next) {
 }
 export function middlewareMetricsInc(req, res, next) {
     res.on("finish", () => {
-        Config.fileserverHits++;
+        config.api.fileServerHits++;
     });
     next();
-}
-export function middlewareErrorHandler(err, req, res, next) {
-    console.error("Something went wrong on our end");
-    res.status(500).json({
-        error: "Something went wrong on our end",
-    });
 }

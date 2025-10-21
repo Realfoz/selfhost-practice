@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import { Config } from "../config.js"
+import { config } from "../config.js"
 
 type Middleware = (req: Request, res: Response, next: NextFunction) => void;
 
@@ -15,7 +15,7 @@ export function middlewareLogResponses(req: Request, res: Response, next: NextFu
 
 export function middlewareMetricsInc(req: Request, res: Response, next: NextFunction) {
   res.on("finish", () => {
-    Config.fileserverHits ++
+    config.api.fileServerHits ++
   });
   next();
 }
