@@ -2,11 +2,12 @@ import express, { request } from "express";
 import { handlerReadiness } from "./api/readiness.js";
 import { middlewareLogResponses, middlewareMetricsInc } from "./api/middleware.js";
 import { config } from "./config.js";
-import { validateChirpHandler } from "./api/validate_chirp.js";
 import { middlewareErrorHandler } from "./api/errors.js";
 import { createUserHandler } from "./api/create_user.js";
 import { handleAdminReset } from "./api/reset.js";
 import { db } from "./db/index.js";
+import { chirpHandler } from "./api/chirps.js";
+
 
 const app = express(); // sets up the main server
 const api = express.Router() // sets up the sub routey server thingie, server but smol
@@ -26,8 +27,8 @@ app.use("/app", express.static("./src/app")); // turns out its called routing an
 
 // api end points
 api.get("/healthz", handlerReadiness); // sets up the healthz end point that triggers the handler when visited
-api.post("/validate_chirp", validateChirpHandler)
 api.post("/users", createUserHandler)
+api.post("/chirps", chirpHandler)
 
 //admin end points
 admin.get("/metrics", (req, res) => {

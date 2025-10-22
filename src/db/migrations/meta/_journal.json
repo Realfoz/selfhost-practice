@@ -8,6 +8,20 @@
       "when": 1760958596427,
       "tag": "0000_dusty_tyger_tiger",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1761141024881,
+      "tag": "0001_majestic_iron_lad",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1761145563347,
+      "tag": "0002_glossy_molten_man",
+      "breakpoints": true
     }
   ]
 }

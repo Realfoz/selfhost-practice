@@ -9,3 +9,4 @@ export async function createUser(user: NewUser) {
     .returning();
   return result;
 }
+
