@@ -6,7 +6,8 @@ import { middlewareErrorHandler } from "./api/errors.js";
 import { createUserHandler } from "./api/create_user.js";
 import { handleAdminReset } from "./api/reset.js";
 import { db } from "./db/index.js";
-import { chirpHandler } from "./api/chirps.js";
+import { chirpHandler } from "./api/chirp.js";
+import { allChirpsHandler, getChirpHandler } from "./api/chirps.js";
 const app = express(); // sets up the main server
 const api = express.Router(); // sets up the sub routey server thingie, server but smol
 const admin = express.Router(); // sets up the admin routing
@@ -21,8 +22,10 @@ app.use("/admin", admin); // mounts the admin routing
 app.use("/app", express.static("./src/app")); // turns out its called routing and its important, who would have thunk
 // api end points
 api.get("/healthz", handlerReadiness); // sets up the healthz end point that triggers the handler when visited
-api.post("/users", createUserHandler);
-api.post("/chirps", chirpHandler);
+api.post("/users", createUserHandler); // add user end point
+api.post("/chirps", chirpHandler); // lets you add a chirp
+api.get("/chirps", allChirpsHandler); // gets all chirps in the db in asc date order
+api.get("/chirps/:chirpID", getChirpHandler);
 //admin end points
 admin.get("/metrics", (req, res) => {
     res.set('Content-Type', 'text/html; charset=utf-8');
