@@ -8,6 +8,7 @@ import { handleAdminReset } from "./api/reset.js";
 import { db } from "./db/index.js";
 import { chirpHandler } from "./api/chirp.js";
 import { allChirpsHandler, getChirpHandler } from "./api/chirps.js";
+import { loginHandler } from "./api/auth.js";
 
 
 
@@ -33,6 +34,7 @@ api.post("/users", createUserHandler) // add user end point
 api.post("/chirps", chirpHandler) // lets you add a chirp
 api.get("/chirps", allChirpsHandler) // gets all chirps in the db in asc date order
 api.get("/chirps/:chirpID", getChirpHandler)
+api.post("/login", loginHandler)
 
 //admin end points
 admin.get("/metrics", (req, res) => {

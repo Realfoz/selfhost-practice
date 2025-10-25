@@ -16,6 +16,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.8.1",
     "drizzle-kit": "^0.31.5",
     "typescript": "^5.9.3"
@@ -24,6 +25,7 @@
     "argon2": "^0.44.0",
     "drizzle-orm": "^0.44.6",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "node": "^25.0.0",
     "postgres": "^3.4.7"
   }
