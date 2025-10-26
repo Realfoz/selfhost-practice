@@ -17,7 +17,7 @@ export type UserWithToken = UserResponse & {
     const tokenString = req.headers.authorization //comes in as an auth header
     const parts = tokenString.trim().split(" ") // incoming message is "Bearer <token_string>"
     if (parts.length !== 2 || parts[0].toLowerCase() !== "bearer" ) { //once split we check the string is not broken and the beaere haas been removed fully
-        throw new BadRequestError(" Invalid Token, If problem persist please contact admin")
+        throw new BadRequestError("Invalid Token, If problem persist please contact admin")
     }
     return parts[1] //returns only the token string
 }

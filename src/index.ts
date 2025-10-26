@@ -34,7 +34,7 @@ api.post("/users", createUserHandler) // add user end point
 api.post("/chirps", chirpHandler) // lets you add a chirp
 api.get("/chirps", allChirpsHandler) // gets all chirps in the db in asc date order
 api.get("/chirps/:chirpID", getChirpHandler)
-api.post("/login", loginHandler)
+api.post("/login", loginHandler) 
 
 //admin end points
 admin.get("/metrics", (req, res) => {
