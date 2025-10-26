@@ -1,5 +1,6 @@
 import { BadRequestError } from "./errors.js";
 import { createChirp } from "../db/queries/chirp.js";
+import { confirmToken } from "./auth.js";
 export async function chirpHandler(req, res) {
     if (!req.body.body || typeof req.body.body !== "string") {
         throw new BadRequestError("Something went wrong, Invalid request body"); //uses new err handler and classes
@@ -7,16 +8,14 @@ export async function chirpHandler(req, res) {
     if (req.body.body.length > 140) {
         throw new BadRequestError("Chirp is too long. Max length is 140"); //uses new err handler and classes
     }
+    //auth layer
+    const userID = await confirmToken(req);
     // "swear" filter layer
     const words = req.body.body.split(" "); // forces the array to be only of strings so TS is happy
     const censored = words.map(word => profanityFinder(word)); //maps each word to the profanity helper function      
     const cleanedBody = censored.join(" ");
-    // user checks
-    if (!req.body.userId || typeof req.body.userId !== "string") {
-        throw new BadRequestError("Something went wrong! Invalid user ID");
-    }
     // DB insertion and checks
-    const chirpData = await createChirp(cleanedBody, req.body.userId);
+    const chirpData = await createChirp(cleanedBody, userID);
     //debug
     //console.log("showing chirp data:")
     //console.log(chirpData)

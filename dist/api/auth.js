@@ -1,6 +1,19 @@
 import * as argon2 from "argon2";
 import { BadRequestError, UnauthorizedError } from "./errors.js";
-import { hashRetrievel } from "../db/queries/auth.js";
+import { checkUUID, hashRetrievel } from "../db/queries/auth.js";
+import { config } from "../config.js";
+import { makeJWT, validateJWT } from "./jwt.js";
+function getBearerToken(req) {
+    if (!req.headers.authorization) {
+        throw new UnauthorizedError("Invalid Token, Please log in to continue");
+    }
+    const tokenString = req.headers.authorization; //comes in as an auth header
+    const parts = tokenString.trim().split(" "); // incoming message is "Bearer <token_string>"
+    if (parts.length !== 2 || parts[0].toLowerCase() !== "bearer") { //once split we check the string is not broken and the beaere haas been removed fully
+        throw new BadRequestError(" Invalid Token, If problem persist please contact admin");
+    }
+    return parts[1]; //returns only the token string
+}
 export function hashPassword(password) {
     return argon2.hash(password);
 }
@@ -10,8 +23,15 @@ export function checkPasswordHash(password, hash) {
 export async function loginHandler(req, res) {
     const email = String(req.body?.email ?? "").trim();
     const password = req.body?.password;
+    let timer = req.body?.expiresInSeconds;
     if (!password || !email) {
         throw new BadRequestError("Please provide an email and password");
+    }
+    if (timer === undefined || timer > 3600 || typeof timer !== 'number') { //forces it into a number so the else if doesnt have issues
+        timer = 3600;
+    }
+    else if (timer <= 0) {
+        throw new UnauthorizedError("Token Expired, Please log back in");
     }
     const userData = await hashRetrievel(email);
     if (!userData) {
@@ -26,6 +46,13 @@ export async function loginHandler(req, res) {
         createdAt: userData.createdAt,
         updatedAt: userData.updatedAt,
         email: userData.email,
+        token: makeJWT(userData.id, timer, config.api.jwt)
     };
     return res.status(200).json(response);
 }
+export async function confirmToken(req) {
+    const userID = validateJWT(getBearerToken(req), config.api.jwt);
+    // gives us back a connfirmed User with a valid time jwt  
+    await checkUUID(userID);
+    return userID;
+} //passes uuid back for handlers

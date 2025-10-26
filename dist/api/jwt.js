@@ -12,7 +12,7 @@ export function makeJWT(userID, expiresIn, secret) {
 export function validateJWT(tokenString, secret) {
     let decoded; // unknown becasue it will end up as a union with a few options to narrow down after. This is like any before it knows its an any
     try {
-        const decoded = jwt.verify(tokenString, secret);
+        decoded = jwt.verify(tokenString, secret);
     }
     catch {
         throw new UnauthorizedError("Auth expired, Please login to continue");
