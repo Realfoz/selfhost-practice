@@ -1,8 +1,9 @@
 import * as argon2 from "argon2";
 import { BadRequestError, UnauthorizedError } from "./errors.js";
-import { checkUUID, hashRetrievel } from "../db/queries/auth.js";
+import { addRefreshToken, checkUUID, getUserFromRefreshToken, hashRetrievel, revokeRefreshToken, updateRefreshToken } from "../db/queries/auth.js";
 import { config } from "../config.js";
 import { makeJWT, validateJWT } from "./jwt.js";
+import { randomBytes } from "node:crypto";
 function getBearerToken(req) {
     if (!req.headers.authorization) {
         throw new UnauthorizedError("Invalid Token, Please log in to continue");
@@ -10,7 +11,7 @@ function getBearerToken(req) {
     const tokenString = req.headers.authorization; //comes in as an auth header
     const parts = tokenString.trim().split(" "); // incoming message is "Bearer <token_string>"
     if (parts.length !== 2 || parts[0].toLowerCase() !== "bearer") { //once split we check the string is not broken and the beaere haas been removed fully
-        throw new BadRequestError(" Invalid Token, If problem persist please contact admin");
+        throw new BadRequestError("Invalid Token, If problem persist please contact admin");
     }
     return parts[1]; //returns only the token string
 }
@@ -23,15 +24,10 @@ export function checkPasswordHash(password, hash) {
 export async function loginHandler(req, res) {
     const email = String(req.body?.email ?? "").trim();
     const password = req.body?.password;
-    let timer = req.body?.expiresInSeconds;
+    const timer = 3600; //defaults tiemr to 1 hour always now
+    const refreshToken = makeRefreshToken();
     if (!password || !email) {
         throw new BadRequestError("Please provide an email and password");
-    }
-    if (timer === undefined || timer > 3600 || typeof timer !== 'number') { //forces it into a number so the else if doesnt have issues
-        timer = 3600;
-    }
-    else if (timer <= 0) {
-        throw new UnauthorizedError("Token Expired, Please log back in");
     }
     const userData = await hashRetrievel(email);
     if (!userData) {
@@ -46,9 +42,11 @@ export async function loginHandler(req, res) {
         createdAt: userData.createdAt,
         updatedAt: userData.updatedAt,
         email: userData.email,
-        token: makeJWT(userData.id, timer, config.api.jwt)
+        token: makeJWT(userData.id, timer, config.api.jwt),
+        refreshToken: refreshToken
     };
-    return res.status(200).json(response);
+    addRefreshToken(response); //sends to db to add token
+    return res.status(200).json(response); //sends back to user
 }
 export async function confirmToken(req) {
     const userID = validateJWT(getBearerToken(req), config.api.jwt);
@@ -56,3 +54,20 @@ export async function confirmToken(req) {
     await checkUUID(userID);
     return userID;
 } //passes uuid back for handlers
+function makeRefreshToken() {
+    const token = randomBytes(32).toString('hex'); //creates a random string 32 bytes long and then converts it to a 64 character hex string
+    return token;
+}
+export async function refreshTokenHandler(req, res) {
+    const currentToken = getBearerToken(req);
+    const userData = await getUserFromRefreshToken(currentToken);
+    const newToken = makeRefreshToken();
+    await updateRefreshToken(userData.userId, newToken);
+    const jwt = makeJWT(userData.userId, 3600, config.api.jwt);
+    return res.status(200).json({ token: jwt });
+}
+export async function revokeTokenHandler(req, res) {
+    const currentToken = getBearerToken(req); //retrieves the current token
+    await revokeRefreshToken(currentToken); // sets revoke date and update date to now
+    return res.status(204).send(); // successful response with no body, needs send or it hangs waiting for data
+}

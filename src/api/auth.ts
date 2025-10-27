@@ -1,13 +1,15 @@
 import * as argon2 from "argon2";
 import { Request, Response } from "express";
 import { BadRequestError, ForbiddenError, UnauthorizedError } from "./errors.js";
-import { checkUUID, hashRetrievel } from "../db/queries/auth.js";
+import { addRefreshToken, checkUUID, getUserFromRefreshToken, hashRetrievel, revokeRefreshToken, updateRefreshToken } from "../db/queries/auth.js";
 import { UserResponse } from "./create_user.js";
 import { config } from "../config.js"
 import { makeJWT, validateJWT } from "./jwt.js";
+import { randomBytes } from "node:crypto";
 
 export type UserWithToken = UserResponse & {
   token: string;
+  refreshToken: string;
 };
 
  function getBearerToken(req: Request): string {
@@ -33,17 +35,13 @@ export function checkPasswordHash(password: string, hash: string): Promise<boole
 export async function loginHandler(req: Request, res: Response) {
     const email = String(req.body?.email ?? "").trim();
     const password = req.body?.password;
-    let timer = req.body?.expiresInSeconds;
+    const timer = 3600 //defaults tiemr to 1 hour always now
+    const refreshToken = makeRefreshToken()
    
     if (!password || !email)  {
         throw new BadRequestError("Please provide an email and password")
     }
-    if (timer === undefined || timer > 3600 || typeof timer !== 'number') { //forces it into a number so the else if doesnt have issues
-        timer = 3600;
-    } else if (timer <= 0) {
-        throw new UnauthorizedError("Token Expired, Please log back in")
-    }
-        
+
     const userData = await hashRetrievel(email)
     if (!userData) {
         throw new UnauthorizedError(" Login failed, please check your email and password")
@@ -58,9 +56,11 @@ export async function loginHandler(req: Request, res: Response) {
     createdAt: userData.createdAt,
     updatedAt: userData.updatedAt,
     email: userData.email,
-    token: makeJWT(userData.id, timer, config.api.jwt)
+    token: makeJWT(userData.id, timer, config.api.jwt),
+    refreshToken: refreshToken
   }
-    return res.status(200).json(response);
+    addRefreshToken(response) //sends to db to add token
+    return res.status(200).json(response); //sends back to user
 }
 
 export async function confirmToken(req: Request){
@@ -69,3 +69,24 @@ export async function confirmToken(req: Request){
     await checkUUID(userID)
     return userID
 } //passes uuid back for handlers
+
+function makeRefreshToken() {
+    const token = randomBytes(32).toString('hex') //creates a random string 32 bytes long and then converts it to a 64 character hex string
+    return token;
+}
+
+export async function refreshTokenHandler(req: Request, res: Response) {
+    const currentToken = getBearerToken(req)
+    const userData = await getUserFromRefreshToken(currentToken)
+    const newToken = makeRefreshToken();
+    await updateRefreshToken(userData.userId, newToken)
+    const jwt = makeJWT(userData.userId, 3600, config.api.jwt)
+    return res.status(200).json({token:jwt})
+}
+
+export async function revokeTokenHandler(req: Request, res: Response) {
+    const currentToken = getBearerToken(req) //retrieves the current token
+    await revokeRefreshToken(currentToken) // sets revoke date and update date to now
+    return res.status(204).send() // successful response with no body, needs send or it hangs waiting for data
+}
+

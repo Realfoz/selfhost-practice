@@ -8,7 +8,7 @@ import { handleAdminReset } from "./api/reset.js";
 import { db } from "./db/index.js";
 import { chirpHandler } from "./api/chirp.js";
 import { allChirpsHandler, getChirpHandler } from "./api/chirps.js";
-import { loginHandler } from "./api/auth.js";
+import { loginHandler, refreshTokenHandler, revokeTokenHandler } from "./api/auth.js";
 const app = express(); // sets up the main server
 const api = express.Router(); // sets up the sub routey server thingie, server but smol
 const admin = express.Router(); // sets up the admin routing
@@ -26,8 +26,10 @@ api.get("/healthz", handlerReadiness); // sets up the healthz end point that tri
 api.post("/users", createUserHandler); // add user end point
 api.post("/chirps", chirpHandler); // lets you add a chirp
 api.get("/chirps", allChirpsHandler); // gets all chirps in the db in asc date order
-api.get("/chirps/:chirpID", getChirpHandler);
+api.get("/chirps/:chirpID", getChirpHandler); //gets specific chirp
 api.post("/login", loginHandler);
+api.post("/refresh", refreshTokenHandler); //refreshes 60 day token from current token data
+api.post("/revoke", revokeTokenHandler);
 //admin end points
 admin.get("/metrics", (req, res) => {
     res.set('Content-Type', 'text/html; charset=utf-8');
