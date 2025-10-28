@@ -11,8 +11,6 @@ import { allChirpsHandler, getChirpHandler } from "./api/chirps.js";
 import { loginHandler, refreshTokenHandler, revokeTokenHandler } from "./api/auth.js";
 import { userCredsUpdateHandler } from "./api/users.js";
 
-
-
 const app = express(); // sets up the main server
 const api = express.Router() // sets up the sub routey server thingie, server but smol
 const admin = express.Router() // sets up the admin routing
@@ -29,18 +27,21 @@ app.use("/admin", admin) // mounts the admin routing
 //main app end points
 app.use("/app", express.static("./src/app")); // turns out its called routing and its important, who would have thunk
 
-// api end points
-api.get("/healthz", handlerReadiness); // sets up the healthz end point that triggers the handler when visited
+// User api end points
 api.post("/users", createUserHandler) // add user end point
+api.post("/login", loginHandler) 
+api.post("/refresh", refreshTokenHandler) //refreshes 60 day token from current token data
+api.put("/users", userCredsUpdateHandler) //lets users updatre email/pwd 
+
+//Chirp end points
 api.post("/chirps", chirpHandler) // lets you add a chirp
 api.get("/chirps", allChirpsHandler) // gets all chirps in the db in asc date order
 api.get("/chirps/:chirpID", getChirpHandler) //gets specific chirp
-api.post("/login", loginHandler) 
-api.post("/refresh", refreshTokenHandler) //refreshes 60 day token from current token data
-api.post("/revoke", revokeTokenHandler)
-api.put("/users", userCredsUpdateHandler) 
+api.delete("/chirps/:chirpID", )
 
 //admin end points
+api.get("/healthz", handlerReadiness); // sets up the healthz end point that triggers the handler when visited
+api.post("/revoke", revokeTokenHandler) // sets token expired at date to lock out users till next login
 admin.get("/metrics", (req, res) => {
    res.set('Content-Type', 'text/html; charset=utf-8')
    res.send(`<html>
@@ -48,10 +49,8 @@ admin.get("/metrics", (req, res) => {
     <h1>Welcome, Chirpy Admin</h1>
     <p>Chirpy has been visited ${config.api.fileServerHits} times!</p>
   </body>
-</html>`)
- 
+</html>`) 
 });
-
 admin.post("/reset", (req, res) => handleAdminReset(req, res, config, db)); // passes all the goodies to the reset endpoint
 
 // other
