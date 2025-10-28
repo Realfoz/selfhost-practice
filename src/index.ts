@@ -7,7 +7,7 @@ import { createUserHandler } from "./api/create_user.js";
 import { handleAdminReset } from "./api/reset.js";
 import { db } from "./db/index.js";
 import { chirpHandler } from "./api/chirp.js";
-import { allChirpsHandler, getChirpHandler } from "./api/chirps.js";
+import { allChirpsHandler, deleteChirpHandler, getChirpHandler } from "./api/chirps.js";
 import { loginHandler, refreshTokenHandler, revokeTokenHandler } from "./api/auth.js";
 import { userCredsUpdateHandler } from "./api/users.js";
 
@@ -37,11 +37,11 @@ api.put("/users", userCredsUpdateHandler) //lets users updatre email/pwd
 api.post("/chirps", chirpHandler) // lets you add a chirp
 api.get("/chirps", allChirpsHandler) // gets all chirps in the db in asc date order
 api.get("/chirps/:chirpID", getChirpHandler) //gets specific chirp
-api.delete("/chirps/:chirpID", )
+api.delete("/chirps/:chirpID", deleteChirpHandler)
 
 //admin end points
 api.get("/healthz", handlerReadiness); // sets up the healthz end point that triggers the handler when visited
-api.post("/revoke", revokeTokenHandler) // sets token expired at date to lock out users till next login
+api.post("/revoke", revokeTokenHandler) // sets token expired at date to lock out users till next login, will probably end up as the ban hammer
 admin.get("/metrics", (req, res) => {
    res.set('Content-Type', 'text/html; charset=utf-8')
    res.send(`<html>

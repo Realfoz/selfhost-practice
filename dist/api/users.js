@@ -30,8 +30,3 @@ export async function userCredsUpdateHandler(req, res) {
         throw new UnauthorizedError("Please log in andd try again");
     }
 }
-// status for tommorrow: i biffed it i think
-// we are getting garbled packets back, i believe this was usualy a problem in something async but im to t ired to find it
-// flow goes index >  handler(here) > gets uuid from token > checks new shit > gets user object frrom uuid >
-// updates the object > sends that to db > makes new object omitting hash > sends it back
-// try/catch entire functions like this handler above

@@ -1,6 +1,7 @@
+import { NotFoundError } from "../../api/errors.js"; //MORE DOTS!
 import { db } from "../index.js";
 import { chirps } from "../schema.js";
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, and } from "drizzle-orm";
 export async function createChirp(chirp, user) {
     const [result] = await db
         .insert(chirps)
@@ -24,4 +25,13 @@ export async function getChirp(chirpID) {
         .from(chirps)
         .where(eq(chirps.id, chirpID));
     return result;
+}
+export async function deleteChirp(chirpID, uuid) {
+    const [result] = await db
+        .delete(chirps)
+        .where(and(eq(chirps.id, chirpID), eq(chirps.userId, uuid))) //can only delete if both the user from the token and chirpID match the db row
+        .returning();
+    if (!result) {
+        throw new NotFoundError("Delete chirp failed");
+    }
 }

@@ -19,7 +19,10 @@
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.8.1",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
     "drizzle-kit": "^0.31.5",
+    "eslint": "^9.38.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.3"
   },
