@@ -8,7 +8,7 @@ export async function createUserHandler(req, res) {
         throw new BadRequestError("Invalid email");
     }
     if (!userPwd) {
-        throw new BadRequestError("Invalid Passwordn");
+        throw new BadRequestError("Invalid Password");
     }
     const hash = String(await hashPassword(userPwd));
     const user = await createUser({

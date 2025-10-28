@@ -4,7 +4,7 @@ import { addRefreshToken, checkUUID, getUserFromRefreshToken, hashRetrievel, rev
 import { config } from "../config.js";
 import { makeJWT, validateJWT } from "./jwt.js";
 import { randomBytes } from "node:crypto";
-function getBearerToken(req) {
+export function getBearerToken(req) {
     if (!req.headers.authorization) {
         throw new UnauthorizedError("Invalid Token, Please log in to continue");
     }

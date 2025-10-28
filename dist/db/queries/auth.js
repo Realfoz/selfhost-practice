@@ -44,8 +44,7 @@ export async function updateRefreshToken(userId, newToken) {
     await db
         .update(refresh_tokens)
         .set({
-        token: newToken,
-        updatedAt: new Date(),
+        token: newToken, //updatesAt done automaticly from schema
     })
         .where(eq(refresh_tokens.userId, userId))
         .execute(); //added to stop hanginng

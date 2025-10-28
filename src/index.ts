@@ -9,6 +9,7 @@ import { db } from "./db/index.js";
 import { chirpHandler } from "./api/chirp.js";
 import { allChirpsHandler, getChirpHandler } from "./api/chirps.js";
 import { loginHandler, refreshTokenHandler, revokeTokenHandler } from "./api/auth.js";
+import { userCredsUpdateHandler } from "./api/users.js";
 
 
 
@@ -36,7 +37,8 @@ api.get("/chirps", allChirpsHandler) // gets all chirps in the db in asc date or
 api.get("/chirps/:chirpID", getChirpHandler) //gets specific chirp
 api.post("/login", loginHandler) 
 api.post("/refresh", refreshTokenHandler) //refreshes 60 day token from current token data
-api.post("/revoke", revokeTokenHandler) 
+api.post("/revoke", revokeTokenHandler)
+api.put("/users", userCredsUpdateHandler) 
 
 //admin end points
 admin.get("/metrics", (req, res) => {

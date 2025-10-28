@@ -12,7 +12,7 @@ export type UserWithToken = UserResponse & {
   refreshToken: string;
 };
 
- function getBearerToken(req: Request): string {
+ export function getBearerToken(req: Request): string {
     if (!req.headers.authorization) {
         throw new UnauthorizedError("Invalid Token, Please log in to continue")
     }
