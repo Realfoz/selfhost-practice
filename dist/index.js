@@ -10,6 +10,7 @@ import { chirpHandler } from "./api/chirp.js";
 import { allChirpsHandler, deleteChirpHandler, getChirpHandler } from "./api/chirps.js";
 import { loginHandler, refreshTokenHandler, revokeTokenHandler } from "./api/auth.js";
 import { userCredsUpdateHandler } from "./api/users.js";
+import { updateChirpyRedHandler } from "./api/polka/webhooks.js";
 const app = express(); // sets up the main server
 const api = express.Router(); // sets up the sub routey server thingie, server but smol
 const admin = express.Router(); // sets up the admin routing
@@ -26,7 +27,8 @@ app.use("/app", express.static("./src/app")); // turns out its called routing an
 api.post("/users", createUserHandler); // add user end point
 api.post("/login", loginHandler);
 api.post("/refresh", refreshTokenHandler); //refreshes 60 day token from current token data
-api.put("/users", userCredsUpdateHandler); //lets users updatre email/pwd 
+api.put("/users", userCredsUpdateHandler); //lets users updatre email/pwd
+api.post("/polka/webhooks", updateChirpyRedHandler);
 //Chirp end points
 api.post("/chirps", chirpHandler); // lets you add a chirp
 api.get("/chirps", allChirpsHandler); // gets all chirps in the db in asc date order

@@ -15,6 +15,18 @@ export function getBearerToken(req) {
     }
     return parts[1]; //returns only the token string
 }
+export function getAPIKey(req) {
+    if (!req.headers.authorization) {
+        throw new UnauthorizedError("Invalid API Key, Please log in to continue");
+    }
+    const parts = req.headers.authorization.trim().split(" "); //should remove whitespaces and split it into an array of 2 parts
+    console.log(`header array[0] ${parts[0]}`);
+    console.log(`header array[1] ${parts[1]}`);
+    if (parts.length !== 2 || parts[0].toLowerCase() !== "apikey") { //once split we check the string is not broken and the beaere haas been removed fully
+        throw new BadRequestError("Invalid Header, If problem persist please contact admin");
+    }
+    return parts[1];
+}
 export function hashPassword(password) {
     return argon2.hash(password);
 }
@@ -42,6 +54,7 @@ export async function loginHandler(req, res) {
         createdAt: userData.createdAt,
         updatedAt: userData.updatedAt,
         email: userData.email,
+        isChirpyRed: userData.isChirpyRed,
         token: makeJWT(userData.id, timer, config.api.jwt),
         refreshToken: refreshToken
     };

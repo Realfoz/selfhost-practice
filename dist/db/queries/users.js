@@ -21,7 +21,16 @@ export async function updateUserEmailPwd(user) {
         .update(users)
         .set({
         email: user.email,
-        hashedPassword: user.hashedPassword
+        hashedPassword: user.hashedPassword,
+        isChirpyRed: user.isChirpyRed
     })
         .where(eq(users.id, user.id));
+}
+export async function upgradeChirpyRed(userID) {
+    await db
+        .update(users)
+        .set({
+        isChirpyRed: true
+    })
+        .where(eq(users.id, userID));
 }

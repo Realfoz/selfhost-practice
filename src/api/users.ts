@@ -3,8 +3,9 @@ import { confirmToken, getBearerToken, hashPassword } from "./auth.js";
 import { BadRequestError, UnauthorizedError } from "./errors.js";
 import { getUserData, updateUserEmailPwd  } from "../db/queries/users.js";
 import { User } from "../db/schema.js";
-import { UserResponse } from "./create_user.js";
 
+
+export type UserResponse = Omit<User, "hashedPassword">; //only omits hash, if its needed often ill make a function to convert
 
 export async function userCredsUpdateHandler(req: Request, res: Response){
     try{
@@ -30,6 +31,7 @@ export async function userCredsUpdateHandler(req: Request, res: Response){
         createdAt: userData.createdAt,
         updatedAt: userData.updatedAt,
         email: userData.email,
+        isChirpyRed: userData.isChirpyRed
         }
     res.status(200).json(safeUserData)
 } catch {

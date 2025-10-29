@@ -23,6 +23,7 @@ export async function userCredsUpdateHandler(req, res) {
             createdAt: userData.createdAt,
             updatedAt: userData.updatedAt,
             email: userData.email,
+            isChirpyRed: userData.isChirpyRed
         };
         res.status(200).json(safeUserData);
     }

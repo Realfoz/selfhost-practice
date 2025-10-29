@@ -1,8 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../index.js";
 import { NewUser, users, User } from "../schema.js";
-import { UserResponse } from "../../api/create_user.js";
-
 
 
 export async function createUser(user: NewUser) {
@@ -27,8 +25,19 @@ export async function updateUserEmailPwd(user: User){
     .update(users)
     .set({
       email: user.email,
-      hashedPassword: user.hashedPassword
+      hashedPassword: user.hashedPassword,
+      isChirpyRed: user.isChirpyRed
     })
     .where(eq(users.id, user.id))
 }
+
+export async function upgradeChirpyRed(userID: string) { //just need to make sure we dont pass the hash/email/other shit around
+      await db
+    .update(users)
+    .set({
+      isChirpyRed: true
+    })
+    .where(eq(users.id, userID))
+}
+
 

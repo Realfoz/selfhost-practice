@@ -3,9 +3,8 @@ import { BadRequestError } from "./errors.js";
 import { createUser } from "../db/queries/users.js";
 import { hashPassword } from "./auth.js";
 import { User } from "../db/schema.js";
+import { UserResponse } from "./users.js";
 
-
-export type UserResponse = Omit<User, "hashedPassword">; //makes sure we dont send back the hash accidently
 
 export async function createUserHandler(req: Request, res: Response) {
   
@@ -32,7 +31,8 @@ export async function createUserHandler(req: Request, res: Response) {
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
     email: user.email,
-    //no hash here :)
+    isChirpyRed: user.isChirpyRed
+   
   }
     return res.status(201).json(response);
 }

@@ -24,7 +24,7 @@ export async function createUserHandler(req, res) {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         email: user.email,
-        //no hash here :)
+        isChirpyRed: user.isChirpyRed
     };
     return res.status(201).json(response);
 }
