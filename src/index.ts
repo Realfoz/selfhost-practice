@@ -32,6 +32,7 @@ app.use("/app", express.static("./src/app")); // turns out its called routing an
 api.post("/users", createUserHandler) // add user end point
 api.post("/login", loginHandler) 
 api.post("/refresh", refreshTokenHandler) //refreshes 60 day token from current token data
+api.post("/revoke", revokeTokenHandler) // logout command for users
 api.put("/users", userCredsUpdateHandler) //lets users updatre email/pwd
 
 
@@ -48,7 +49,6 @@ api.get("/chirps", async (req, res) => {
 
 //admin end points
 api.get("/healthz", handlerReadiness); // sets up the healthz end point that triggers the handler when visited
-api.post("/revoke", revokeTokenHandler) // sets token expired at date to lock out users till next login, will probably end up as the ban hammer
 api.post("/polka/webhooks", updateChirpyRedHandler) 
 admin.get("/metrics", (req, res) => {
    res.set('Content-Type', 'text/html; charset=utf-8')

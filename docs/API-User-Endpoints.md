@@ -101,7 +101,7 @@ Response:
  Send the current valid refresh token as the following format to refresh the users current access token.
  The user must be logged in with valid access token to use this endpoint.
  
- Request Body:
+ Request Authorisation Header:
  ```json
 {
   "token": "<current_refresh_token>"
@@ -123,3 +123,20 @@ Response:
 }
 ```
 
+## POST /api/revoke
+An endpoint for you to mark any refresh token as expired so the user has to login again. 
+Mainly used to logout of from the API.
+
+ Request Authorisation Header:
+ ```json
+{
+  "bearer": "<current_refresh_token>"
+}
+```
+
+Uses:
+
+	- Verifies users credentials from current token
+	- set the "revokedAt" flag so the current refresh toke is invalid
+
+The server will only respond to this with a status 204 as confirmation of the logout.
