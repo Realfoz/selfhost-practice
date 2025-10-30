@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { deleteChirp, getAllChirps, getChirp } from "../db/queries/chirp.js";
+import { chirpsByAuthorId, deleteChirp, getAllChirps, getChirp } from "../db/queries/chirp.js";
 import { BadRequestError, ForbiddenError, NotFoundError } from "./errors.js";
 import { confirmToken } from "./auth.js";
 
@@ -47,4 +47,13 @@ export async function deleteChirpHandler(req: Request, res: Response) {
     await deleteChirp(chirpID, userID)
     
     res.status(204).send()
+}
+
+export async function getAuthorsChirpsHandler(req: Request, res: Response){
+    const authorId = req.query.authorId
+    if(!authorId || typeof authorId !== "string"){
+        throw new BadRequestError("Invalid Author ID")
+    }
+    const chirps = await chirpsByAuthorId(authorId)
+    return res.status(200).json(chirps)
 }

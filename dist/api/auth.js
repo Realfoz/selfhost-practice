@@ -19,9 +19,7 @@ export function getAPIKey(req) {
     if (!req.headers.authorization) {
         throw new UnauthorizedError("Invalid API Key, Please log in to continue");
     }
-    const parts = req.headers.authorization.trim().split(" "); //should remove whitespaces and split it into an array of 2 parts
-    console.log(`header array[0] ${parts[0]}`);
-    console.log(`header array[1] ${parts[1]}`);
+    const parts = req.headers.authorization.trim().split(" "); //should remove whitespaces and split it into an array of 2 parts 
     if (parts.length !== 2 || parts[0].toLowerCase() !== "apikey") { //once split we check the string is not broken and the beaere haas been removed fully
         throw new BadRequestError("Invalid Header, If problem persist please contact admin");
     }
@@ -77,7 +75,11 @@ export async function refreshTokenHandler(req, res) {
     const newToken = makeRefreshToken();
     await updateRefreshToken(userData.userId, newToken);
     const jwt = makeJWT(userData.userId, 3600, config.api.jwt);
-    return res.status(200).json({ token: jwt });
+    return res.status(200).json({
+        token: jwt,
+        refreshToken: newToken,
+        expiresIn: 3600
+    });
 }
 export async function revokeTokenHandler(req, res) {
     const currentToken = getBearerToken(req); //retrieves the current token

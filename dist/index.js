@@ -7,7 +7,7 @@ import { createUserHandler } from "./api/create_user.js";
 import { handleAdminReset } from "./api/reset.js";
 import { db } from "./db/index.js";
 import { chirpHandler } from "./api/chirp.js";
-import { allChirpsHandler, deleteChirpHandler, getChirpHandler } from "./api/chirps.js";
+import { allChirpsHandler, deleteChirpHandler, getAuthorsChirpsHandler, getChirpHandler } from "./api/chirps.js";
 import { loginHandler, refreshTokenHandler, revokeTokenHandler } from "./api/auth.js";
 import { userCredsUpdateHandler } from "./api/users.js";
 import { updateChirpyRedHandler } from "./api/polka/webhooks.js";
@@ -28,15 +28,20 @@ api.post("/users", createUserHandler); // add user end point
 api.post("/login", loginHandler);
 api.post("/refresh", refreshTokenHandler); //refreshes 60 day token from current token data
 api.put("/users", userCredsUpdateHandler); //lets users updatre email/pwd
-api.post("/polka/webhooks", updateChirpyRedHandler);
 //Chirp end points
 api.post("/chirps", chirpHandler); // lets you add a chirp
-api.get("/chirps", allChirpsHandler); // gets all chirps in the db in asc date order
 api.get("/chirps/:chirpID", getChirpHandler); //gets specific chirp
-api.delete("/chirps/:chirpID", deleteChirpHandler);
+api.delete("/chirps/:chirpID", deleteChirpHandler); //delete specific chirp
+api.get("/chirps", async (req, res) => {
+    if (req.query.authorId) {
+        return await getAuthorsChirpsHandler(req, res); //routes here if they specify an author id
+    }
+    return await allChirpsHandler(req, res); //if they dont it does all chirps in asc order
+});
 //admin end points
 api.get("/healthz", handlerReadiness); // sets up the healthz end point that triggers the handler when visited
 api.post("/revoke", revokeTokenHandler); // sets token expired at date to lock out users till next login, will probably end up as the ban hammer
+api.post("/polka/webhooks", updateChirpyRedHandler);
 admin.get("/metrics", (req, res) => {
     res.set('Content-Type', 'text/html; charset=utf-8');
     res.send(`<html>

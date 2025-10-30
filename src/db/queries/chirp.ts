@@ -43,3 +43,11 @@ export async function deleteChirp(chirpID: string, uuid: string) {
     throw new NotFoundError("Delete chirp failed")
   }
 }
+
+export async function chirpsByAuthorId(uuid: string) {
+    const result = await db
+    .select()
+    .from(chirps)
+    .where(eq(chirps.userId, uuid))
+    return result; //return the array so if its all fo tehm
+}
