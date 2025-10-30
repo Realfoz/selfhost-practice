@@ -12,6 +12,7 @@ Request Body:
 ```
 
 Uses:
+
 	- Confirms its a valid email address and removes any additional white spaces.
 	- Hashes and salts the password before being written to the database.
 
@@ -42,6 +43,7 @@ Request Body:
 ```
 
 Uses:
+
 	- Confirms its a valid user using the access token
 	- Hashes and salts the new password if sent
 	- Updates the database with the new details
@@ -71,7 +73,8 @@ Request Body:
 ```
 
 Uses:
-	-  Verifies users credentials and issues new tokens.
+
+	- Verifies users credentials and issues new tokens.
 	- The access token (JWT) expires in 1 hour
 	- The refresh token lasts 60 days and is needed for server side future access tokens and admin control on user accounts
 
@@ -101,6 +104,7 @@ Response:
 ```
 
 Uses:
+
 	-  Verifies users credentials from current tokens
 	- Creates and updates the refresh token with a 60 day expiry
 	- Creates a new access token with a 1 hour expiry
