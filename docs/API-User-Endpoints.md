@@ -1,6 +1,6 @@
 
 
-### GET /api/users
+## GET /api/users
 Used to add a new user account. This will only result in the user being added to the database and they will still need to login to generate access tokens.
 
 Request Body:
@@ -29,7 +29,9 @@ Response:
 
 
 
-### PUT /api/users
+
+
+## PUT /api/users
 The user must be logged in with valid access token token to use this endpoint.
 Allows the user to change the stored password or email for the user account.
 The request body can be either: Password | Email | Both in the body
@@ -62,7 +64,9 @@ Response:
 
 
 
-### POST /api/login
+
+
+## POST /api/login
 Authenticates a user and starts a session.
 Request Body:
 ```json
@@ -92,7 +96,8 @@ Response:
 
 
 
-### POST /api/refresh
+
+## POST /api/refresh
  Send the current valid refresh token as the following format to refresh the users current access token.
  The user must be logged in with valid access token to use this endpoint.
  
