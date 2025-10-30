@@ -105,7 +105,7 @@ Response:
 
 Uses:
 
-	-  Verifies users credentials from current tokens
+	- Verifies users credentials from current tokens
 	- Creates and updates the refresh token with a 60 day expiry
 	- Creates a new access token with a 1 hour expiry
 
