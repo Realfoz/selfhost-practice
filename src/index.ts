@@ -44,7 +44,7 @@ api.get("/chirps", async (req, res) => {
   if (req.query.authorId) {
     return await getAuthorsChirpsHandler(req, res); //routes here if they specify an author id
   }
-  return await allChirpsHandler(req, res); //if they dont it does all chirps in asc order
+  return await allChirpsHandler(req, res); //if they dont it does all chirps in asc order unless they have a query.sort property checked by the handler
 });
 
 //admin end points

@@ -1,7 +1,7 @@
 import { NotFoundError } from "../../api/errors.js"; //MORE DOTS!
 import { db } from "../index.js";
 import { chirps } from "../schema.js";
-import { asc, eq, and } from "drizzle-orm";
+import { asc, eq, and, desc } from "drizzle-orm";
 export async function createChirp(chirp, user) {
     const [result] = await db
         .insert(chirps)
@@ -17,6 +17,13 @@ export async function getAllChirps() {
         .select()
         .from(chirps)
         .orderBy(asc(chirps.createdAt));
+    return results;
+}
+export async function getAllChirpsDesc() {
+    const results = await db
+        .select()
+        .from(chirps)
+        .orderBy(desc(chirps.createdAt));
     return results;
 }
 export async function getChirp(chirpID) {

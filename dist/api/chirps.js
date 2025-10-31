@@ -1,9 +1,18 @@
-import { chirpsByAuthorId, deleteChirp, getAllChirps, getChirp } from "../db/queries/chirp.js";
+import { chirpsByAuthorId, deleteChirp, getAllChirps, getAllChirpsDesc, getChirp } from "../db/queries/chirp.js";
 import { BadRequestError, ForbiddenError, NotFoundError } from "./errors.js";
 import { confirmToken } from "./auth.js";
 export async function allChirpsHandler(req, res) {
-    await confirmToken(req); //auth confirmation layer
-    const results = await getAllChirps();
+    // dont need to auth here await confirmToken(req) //auth confirmation layer
+    let results = [];
+    if (req.query.sort && req.query.sort === "desc") { //if they specify desc
+        results = await getAllChirpsDesc();
+    }
+    else if (!req.query.sort || req.query.sort === "asc") { //if they dont specify or specify asc
+        results = await getAllChirps();
+    }
+    else {
+        throw new BadRequestError("Invalid sort query"); //removes all other failed querys
+    }
     if (!results) {
         throw new BadRequestError("Something went wrong! Chirp retrieval failed");
     }
